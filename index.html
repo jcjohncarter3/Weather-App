@@ -5,13 +5,14 @@
         <title>Weather App</title>
         <link rel="stylesheet" href="style.css"
         <meta name="viewport" content="width=device-width, intial-scale=1.0">
+        <script src="script.js" defer></script>
     </head>
     <body>
         <h1>Dashboard</h1>
         <div class="container">
             <div class="weather-input">
                 <h3>Enter a City Name</h3>
-                <input type="text" placeholder="e.g. Austin, Houston, Dallas">
+                <input class="city-input" type="text" placeholder="e.g. Austin, Houston, Dallas">
                 <button class="search-btn">Search</button>
                 <div class="seperator"></div>
                 <button class="location-btn">Use Current Location</button>
@@ -28,6 +29,18 @@
                         <img src="https://openweathermap.org/img/wn10d@4x.png" alt="weather icon">
                         <h4>Sunny</h4>
                     </div>
+                </div>
+                <div class="days-forecast">
+                    <h2>5-day Forecast</h2>
+                    <ul class="weather-cards">
+                        <li class="card">
+                            <h3>Dallas (08/21/2024)</h3>
+                            <img src="https://openweathermap.org/img/wn10d@4x.png" alt="weather icon">
+                            <h4>Temp:100</h4>
+                            <h4>Wind:20mph</h4>
+                            <h4>Humidity:30%</h4>
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>
