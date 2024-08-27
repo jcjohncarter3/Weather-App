@@ -89,7 +89,8 @@ h1 {
     font-weight: 500;
 }
 .current-weather .icon img {
-    text-align: center;
+    text-align: center
+    ;
 }
 
 .current-weather .icon img {
