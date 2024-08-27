@@ -3,9 +3,29 @@ const searchButton = document.querySelector(".search-btn");
 const locationButton = document.querySelector(".location-btn");
 const currentWeatherDiv = document.querySelector(".current-weather");
 const weatherCardsDiv = document.querySelector(".weather-cards");
+const citySearchHistoryDiv = document.querySelector(".city-search-history");
 
 const API_KEY = "71bebfb9822c0b64ef1686ac810b8ea1";
 
+const URL = "https://api.openweathermap.org"
+
+const citySearchHistorylist = JSON.parse(localStorage.getItem ("cityHistory")) || [];
+
+const createCityNameCard = (name) => {
+    return `<div class = "city-name-card"> 
+        ${name}
+    
+    
+    <div>`
+}; 
+
+const renderCityCards = () => {
+    citySearchHistoryDiv.innerHTML = "";
+    citySearchHistorylist.forEach((city) => {
+        createCityNameCard (city.name); citySearchHistoryDiv.insertAdjacentHTML("beforeend",createCityNameCard(city.name));
+    })
+}
+renderCityCards();
 const createWeatherCard = (cityName, weatherItem, index) => {
     if(index === 0) {
         return `  <div class="details">
@@ -20,7 +40,7 @@ const createWeatherCard = (cityName, weatherItem, index) => {
                     </div>`;
     } else {
          return ` <li class="card">
-                            <h3>(${weatherItem.dt_txt.split(" ")[0]}</h3>
+                            <h3>${weatherItem.dt_txt.split(" ")[0]}</h3>
                             <img src="https://openweathermap.org/img/wn/${weatherItem.weather[0].icon}@2x.png" alt="weather icon">
                             <h4>Temp:${(weatherItem.main.temp - 212).toFixed(2)}°F</h4>
                             <h4>Wind:${weatherItem.wind.speed}mph</h4>
@@ -30,7 +50,7 @@ const createWeatherCard = (cityName, weatherItem, index) => {
         }
 
 const getWeatherDetails = (cityName, lat, lon) => {
-    const WEATHER_API_URL = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${API_KEY}`;
+    const WEATHER_API_URL = `${URL}/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${API_KEY}`;
 
     fetch (WEATHER_API_URL).then(res => res.json()).then(data => {
         const uniqueForecastDays = [];
@@ -63,12 +83,14 @@ const getWeatherDetails = (cityName, lat, lon) => {
 const getCityCoordinates = () => {
     const cityName = cityInput.value.trim(); 
     if(!cityName) return;
-    const GEOCODING_API_URL = `https://api.openweathermap.org/geo/1.0/direct?q=${cityName}&limit=1&appid=${API_KEY}`;
+    const GEOCODING_API_URL = `${URL}/geo/1.0/direct?q=${cityName}&limit=1&appid=${API_KEY}`;
     
     fetch(GEOCODING_API_URL).then(res => res.json().then(data => {
         if(!data.length) return alert (`No coordinates found for ${cityName}`);
         const { name, lat, lon } = data [0];
         getWeatherDetails(name, lat, lon);
+        saveCityNames(name, lat, lon);
+        renderCityCards();
     }).catch(() => {
         alert ("An error occurred while fetching the coordinates!");
     }));
@@ -78,10 +100,12 @@ const getUserCoordinates = () => {
     navigator.geolocation.getCurrentPosition(
         position => {
             const { latitude, longitude} = position.coords;
-            const REVERSE_GEOCODING_URL = `https://api.openweathermap.org/geo/1.0/reverse?lat=${latitude}&lon=${longitude}&limit=1&appid=${API_KEY}`;
+            const REVERSE_GEOCODING_URL = `${URL}/geo/1.0/reverse?lat=${latitude}&lon=${longitude}&limit=1&appid=${API_KEY}`;
             fetch(REVERSE_GEOCODING_URL).then(res => res.json().then(data => {
                 const { name, } = data [0];
                 getWeatherDetails(name, latitude, longitude);
+                saveCityNames(name, latitude, longitude);
+                renderCityCards();
             }).catch(() => {
                 alert ("An error occurred while fetching the city!");
             }));
@@ -98,3 +122,12 @@ locationButton.addEventListener("click", getUserCoordinates);
 searchButton.addEventListener("click", getCityCoordinates);
 cityInput.addEventListener("keyup", e => e.key === "Enter" && getCityCoordinates());
 
+
+const saveCityNames = (name, latitude, longitude) => {
+    citySearchHistorylist.push ({
+        name, 
+        latitude, 
+        longitude
+         })
+    localStorage.setItem ("cityHistory", JSON.stringify(citySearchHistorylist))
+}
