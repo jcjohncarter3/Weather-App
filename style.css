@@ -16,6 +16,7 @@ h1 {
     font-size: 1.75rem;
     background: #5372F0;
 }
+
 .container {
     display: flex;
     gap: 35px;
@@ -97,7 +98,7 @@ h1 {
     max-width: 120px;
     margin-top: -15px;
 }
-.current-weather h4 {
+.current-weather .icon h4 {
     margin-top: -10px;
     text-transform: capitalize;
 }
